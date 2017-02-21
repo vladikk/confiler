@@ -44,3 +44,76 @@ Feature: Merging configuration files
        | web-server | 192.168.1.100 |
        | database   | 192.168.1.101 |
        | app-server | 192.168.1.103 |
+
+  Scenario: Collection can be replace in a child environment
+    Given "hosts" is set to the following values for the dev environment
+       | name       | address  |
+       | web-server | 10.0.0.1 |
+       | database   | 10.0.0.2 |
+      And "hosts" is set to the following values for the dev.vladik environment
+       | name       | address       |
+       | web-server | 192.168.1.100 |
+       | database   | 192.168.1.101 |
+       | app-server | 192.168.1.103 |
+     When a configuration file is compiled for the dev.vladik environment
+     Then "hosts" holds the following values
+       | name       | address       |
+       | web-server | 192.168.1.100 |
+       | database   | 192.168.1.101 |
+       | app-server | 192.168.1.103 |
+
+  Scenario: A child environment can delete items from its parent's collection
+    Given "hosts" is set to the following values for the dev environment
+       | name        | address       |
+       | web-server  | 192.168.1.100 |
+       | database-m  | 192.168.1.111 |
+       | database-s1 | 192.168.1.112 |
+       | database-s2 | 192.168.1.113 |
+       | app-server  | 192.168.1.103 |
+      And the following items are set to be deleted from "hosts" in the dev.vladik environment
+       | name        |
+       | database-s1 | 
+       | database-s2 | 
+     When a configuration file is compiled for the dev.vladik environment
+     Then "hosts" holds the following values
+       | name       | address       |
+       | web-server | 192.168.1.100 |
+       | database-m | 192.168.1.111 |
+       | app-server | 192.168.1.103 |
+
+  Scenario: A child environment can append items to its parent's collection
+    Given "hosts" is set to the following values for the dev environment
+       | name       | address       |
+       | web-server | 192.168.1.100 |
+       | database-m | 192.168.1.111 |
+       | app-server | 192.168.1.103 |
+      And the following items are added to the "hosts" collection in the dev.vladik environment
+       | name        | address       |
+       | database-s1 | 192.168.1.112 |
+       | database-s2 | 192.168.1.113 |
+     When a configuration file is compiled for the dev.vladik environment
+     Then "hosts" holds the following values
+       | name        | address       |
+       | web-server  | 192.168.1.100 |
+       | database-m  | 192.168.1.111 |
+       | database-s1 | 192.168.1.112 |
+       | database-s2 | 192.168.1.113 |
+       | app-server  | 192.168.1.103 |
+
+  Scenario: A child environment can update values in its parent's collection
+    Given "hosts" is set to the following values for the dev environment
+       | name       | address       |
+       | web-server | 192.168.1.100 |
+       | database-m | 192.168.1.111 |
+       | app-server | 192.168.1.103 |
+      And the following items are set to be updated in the "hosts" collection in the dev.vladik environment
+       | key  | name       | address    |
+       | name | web-server | 10.0.1.100 |
+       | name | database-m | 10.0.1.101 |
+       | name | app-server | 10.0.1.102 |
+     When a configuration file is compiled for the dev.vladik environment
+     Then "hosts" holds the following values
+       | name       | address    |
+       | web-server | 10.0.1.100 |
+       | database-m | 10.0.1.101 |
+       | app-server | 10.0.1.102 |
