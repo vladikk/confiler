@@ -30,15 +30,13 @@ def compile(environments_folder, target_env):
         if any(list_actions):
           current_value = result[key]
           for a in list_actions:
-            if a[action] == remove:
-              items = get_matching_list_items(current_value, a[matching])
-              for i in items:
-                result[key].remove(i)
             if a[action] == append:
               result[key].append(a[item])
+            if a[action] == remove:
+              for i in get_matching_list_items(current_value, a[matching]):
+                result[key].remove(i)
             if a[action] == update:
-              items = get_matching_list_items(current_value, a[matching])
-              for i in items:
+              for i in get_matching_list_items(current_value, a[matching]):
                 for k in a[data].keys():
                   i[k] = a[data][k]
         else: 
