@@ -1,10 +1,6 @@
 import os
 from behave import *
 import json
-import sys
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../../')
-
 import confiler
 
 @given(u'the following config file is set for the {env_name} environment')
