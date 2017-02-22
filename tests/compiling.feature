@@ -194,7 +194,6 @@ Feature: Compiling configuration data
        }
        """
 
-  @wip
   Scenario: A child environment can update values in its parent's collection
     Given the following config file is set for the dev environment
        """

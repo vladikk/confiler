@@ -8,8 +8,10 @@ env_file_extension = "env"
 action = "$action"
 matching = "$matching"
 item = "$item"
+data = "$data"
 remove = "remove"
 append = "append"
+update = "update"
 logger = logging.getLogger('api')
 
 def compile(environments_folder, target_env):
@@ -29,11 +31,17 @@ def compile(environments_folder, target_env):
           for a in list_actions:
             if a[action] == remove:
               m = a[matching]
-              items = [i for i in result[key] if all([c in i.keys() and i[c]==m[c]  for c in m.keys()])]
+              items = [i for i in result[key] if all([c in i.keys() and i[c]==m[c] for c in m.keys()])]
               for i in items:
                 result[key].remove(i)
             if a[action] == append:
               result[key].append(a[item])
+            if a[action] == update:
+              m = a[matching]
+              items = [i for i in result[key] if all([c in i.keys() and i[c]==m[c] for c in m.keys()])]
+              for i in items:
+                for k in a[data].keys():
+                  i[k] = a[data][k]
         else: 
           result[key] = val
   return json.dumps(result)
