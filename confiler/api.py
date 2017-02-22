@@ -7,7 +7,9 @@ namespace_delimeter = "."
 env_file_extension = "env"
 action = "$action"
 matching = "$matching"
+item = "$item"
 remove = "remove"
+append = "append"
 logger = logging.getLogger('api')
 
 def compile(environments_folder, target_env):
@@ -30,6 +32,8 @@ def compile(environments_folder, target_env):
               items = [i for i in result[key] if all([c in i.keys() and i[c]==m[c]  for c in m.keys()])]
               for i in items:
                 result[key].remove(i)
+            if a[action] == append:
+              result[key].append(a[item])
         else: 
           result[key] = val
   return json.dumps(result)

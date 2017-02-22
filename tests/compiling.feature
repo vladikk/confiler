@@ -160,7 +160,6 @@ Feature: Compiling configuration data
        }
        """
 
-  @wip
   Scenario: A child environment can append items to its parent's collection
     Given the following config file is set for the dev environment
        """
@@ -176,8 +175,8 @@ Feature: Compiling configuration data
        """
        {
          "hosts": [
-           { "$action": "append", "$item": { "name": "database-s1", "address": "192.168.1.111" } },
-           { "$action": "append", "$item": { "name": "database-s2", "address": "192.168.1.112" } }
+           { "$action": "append", "$item": { "name": "database-s1", "address": "192.168.1.112" } },
+           { "$action": "append", "$item": { "name": "database-s2", "address": "192.168.1.113" } }
          ]
        }
        """
@@ -188,9 +187,9 @@ Feature: Compiling configuration data
          "hosts": [
            { "name": "web-server", "address": "192.168.1.100" },
            { "name": "database-m", "address": "192.168.1.111" },
+           { "name": "app-server", "address": "192.168.1.103" },
            { "name": "database-s1", "address": "192.168.1.112" },
-           { "name": "database-s2", "address": "192.168.1.113" },
-           { "name": "app-server", "address": "192.168.1.103" }
+           { "name": "database-s2", "address": "192.168.1.113" }
          ]
        }
        """
