@@ -5,6 +5,7 @@ Feature: Compiling configuration data
   and to be able to merge them into a single configuration that will
   inherit and override values from underlying namespaces.
 
+  @wip
   Scenario: A value that was set will be emitted after compilation
     Given the following config file is set for the dev environment
        """
