@@ -17,7 +17,7 @@ def step_impl(context, env_name):
 def step_impl(context):
   result = json.loads(context.result_json)
   expected = json.loads(context.text)
-  assert ordered(result) == ordered(expected)
+  assert ordered(result) == ordered(expected), "%s != %s" % (json.dumps(result), json.dumps(expected))
 
 def ordered(obj):
   if isinstance(obj, dict):
