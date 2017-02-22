@@ -5,6 +5,9 @@ from logging import DEBUG
 
 namespace_delimeter = "."
 env_file_extension = "env"
+action = "$action"
+matching = "$matching"
+remove = "remove"
 logger = logging.getLogger('api')
 
 def compile(environments_folder, target_env):
@@ -15,7 +18,20 @@ def compile(environments_folder, target_env):
     env_name = namespace_delimeter.join(parts[0:i+1])
     env = load_env(environments_folder, env_name)
     for key in env.keys():
-      result[key] = env[key]
+      val = env[key]
+      if not isinstance(val, list):
+        result[key] = val
+      else:
+        list_actions = [i for i in val if action in i.keys()]
+        if any(list_actions):
+          for a in list_actions:
+            if a[action] == remove:
+              m = a[matching]
+              items = [i for i in result[key] if all([c in i.keys() and i[c]==m[c]  for c in m.keys()])]
+              for i in items:
+                result[key].remove(i)
+        else: 
+          result[key] = val
   return json.dumps(result)
 
 def load_env(environments_folder, env_name):

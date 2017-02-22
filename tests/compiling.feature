@@ -228,3 +228,12 @@ Feature: Compiling configuration data
          ]
        }
        """
+
+  @wip
+  Scenario: List operations without base list
+
+  @wip
+  Scenario: Objects - not supported
+
+  @wip
+  Scenario: List operations and items in the same value
