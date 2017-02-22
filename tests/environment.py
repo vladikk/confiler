@@ -10,5 +10,4 @@ def before_scenario(context, scenario):
   context.work_dir = work_dir
 
 def after_scenario(context, scenario):
-  pass
-  # shutil.rmtree(context.work_dir) 
+  shutil.rmtree(context.work_dir) 
