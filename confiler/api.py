@@ -28,23 +28,25 @@ def compile(environments_folder, target_env):
       else:
         list_actions = [i for i in val if action in i.keys()]
         if any(list_actions):
+          current_value = result[key]
           for a in list_actions:
             if a[action] == remove:
-              m = a[matching]
-              items = [i for i in result[key] if all([c in i.keys() and i[c]==m[c] for c in m.keys()])]
+              items = get_matching_list_items(current_value, a[matching])
               for i in items:
                 result[key].remove(i)
             if a[action] == append:
               result[key].append(a[item])
             if a[action] == update:
-              m = a[matching]
-              items = [i for i in result[key] if all([c in i.keys() and i[c]==m[c] for c in m.keys()])]
+              items = get_matching_list_items(current_value, a[matching])
               for i in items:
                 for k in a[data].keys():
                   i[k] = a[data][k]
         else: 
           result[key] = val
   return json.dumps(result)
+
+def get_matching_list_items(source, conditions_dict):
+  return [i for i in source if all([c in i.keys() and i[c]==conditions_dict[c] for c in conditions_dict.keys()])]
 
 def load_env(environments_folder, env_name):
   logger.info("Loading data file for the '%s' environment" % env_name)
