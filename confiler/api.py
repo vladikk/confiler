@@ -73,6 +73,7 @@ def render(environments_path,
            template_file_path=None,
            templates_path=None):
   env_data = json.loads(compile(environments_path, environment_name))
+  ensure_folder_exists(target_path)
   if template_file_path:
     render_template(env_data, template_file_path, target_path)
   elif templates_path:
@@ -98,3 +99,7 @@ def get_files(path, extension):
     p = os.path.join(path, f)
     if os.path.isfile(p) and os.path.splitext(p)[1] == extension:
       yield p
+
+def ensure_folder_exists(path):
+  if not os.path.exists(path):
+    os.makedirs(path)

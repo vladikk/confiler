@@ -1,0 +1,5 @@
+web-server 192.168.1.100
+database 192.168.10.111
+app-server 192.168.1.102
+database-s1 192.168.10.112
+database-s2 192.168.10.113
