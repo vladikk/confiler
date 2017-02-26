@@ -301,3 +301,5 @@ Feature: Compiling configuration data
      When configuration data is compiled for the dev environment
      Then the error is returned: Complex objects are not supported (hosts). All values should be strings 
 
+  @wip
+  Scenario: Support complex objects - nested objects except nested collections
