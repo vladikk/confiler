@@ -28,6 +28,8 @@ def compile(environments_folder, target_env):
       else:
         list_actions = [i for i in val if action in i.keys()]
         if any(list_actions):
+          if key not in result:
+            raise Exception('Attempt to execute action on unexisting collection "%s"' % key)
           current_value = result[key]
           for a in list_actions:
             if a[action] == append:

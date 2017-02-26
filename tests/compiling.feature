@@ -227,8 +227,23 @@ Feature: Compiling configuration data
        }
        """
 
-  @wip
   Scenario: List operations without base list
+    Given the following config file is set for the dev environment
+       """
+       {
+       }
+       """
+      And the following config file is set for the dev.vladik environment
+       """
+       {
+         "hosts": [
+           { "$action": "append", "$item": { "name": "database-s1", "address": "192.168.1.112" } },
+           { "$action": "append", "$item": { "name": "database-s2", "address": "192.168.1.113" } }
+         ]
+       }
+       """
+     When configuration data is compiled for the dev.vladik environment
+     Then the error is returned: Attempt to execute action on unexisting collection "hosts"
 
   @wip
   Scenario: Objects - not supported

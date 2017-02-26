@@ -11,13 +11,21 @@ def step_impl(context, env_name):
 
 @when(u'configuration data is compiled for the {env_name} environment')
 def step_impl(context, env_name):
-  context.result_json = confiler.compile(context.work_dir, env_name)
+  try:
+    context.result_json = confiler.compile(context.work_dir, env_name)
+  except Exception as e:
+    context.error = e
 
 @then(u'the result is the following configuration document')
 def step_impl(context):
   result = json.loads(context.result_json)
   expected = json.loads(context.text)
   assert ordered(result) == ordered(expected), "%s != %s" % (json.dumps(result), json.dumps(expected))
+
+@then(u'The error is returned: {expected_error}')
+def step_impl(context, expected_error):
+  assert context.error != None, "Exception wasn't raised"
+  assert context.error.message == expected_error, "%s != %s" % (context.error.message, expected_error)
 
 def ordered(obj):
   if isinstance(obj, dict):
