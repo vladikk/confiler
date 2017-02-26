@@ -1,1 +1,7 @@
-behave
+behave==1.2.5
+enum34==1.1.6
+Jinja2==2.9.5
+MarkupSafe==0.23
+parse==1.6.6
+parse-type==0.3.4
+six==1.10.0
