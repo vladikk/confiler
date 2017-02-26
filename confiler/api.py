@@ -67,11 +67,22 @@ def load_env(environments_folder, env_name):
     env_json = json_file.read()
     return json.loads(env_json)
 
-def render(environment_file_path=None, target_path=None, template_file_path=None):
+def render(environment_file_path=None, 
+           target_path=None, 
+           template_file_path=None,
+           templates_path=None):
+  env_data = json.loads(read_file(environment_file_path))
+  if template_file_path:
+    render_template(env_data, template_file_path, target_path)
+  elif templates_path:
+    for f in os.listdir(templates_path):
+      template_file_path = os.path.join(templates_path, f)
+      render_template(env_data, template_file_path, target_path)
+
+def render_template(env_data, template_file_path, target_path):
   template = Template(read_file(template_file_path), trim_blocks=True, lstrip_blocks=True)
-  env_data = read_file(environment_file_path)
   target_file_path = os.path.join(target_path, ntpath.basename(template_file_path))
-  rendered = template.render(json.loads(env_data))
+  rendered = template.render(env_data)
   with open(target_file_path, "w") as result_file:
     result_file.write(rendered.strip())
 
