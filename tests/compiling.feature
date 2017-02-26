@@ -245,6 +245,26 @@ Feature: Compiling configuration data
      When configuration data is compiled for the dev.vladik environment
      Then the error is returned: Attempt to execute action on unexisting collection "hosts"
 
+  Scenario: List actions on a non-collection value
+    Given the following config file is set for the dev environment
+       """
+       {
+         "hosts": "a primitive value"
+       }
+       """
+      And the following config file is set for the dev.vladik environment
+       """
+       {
+         "hosts": [
+           { "$action": "append", "$item": { "name": "database-s1", "address": "192.168.1.112" } },
+           { "$action": "append", "$item": { "name": "database-s2", "address": "192.168.1.113" } }
+         ]
+       }
+       """
+     When configuration data is compiled for the dev.vladik environment
+     Then the error is returned: Attempt to execute lists action on a non-collection key "hosts"
+
+
   @wip
   Scenario: Objects - not supported
 

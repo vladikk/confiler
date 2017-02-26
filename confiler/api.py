@@ -30,6 +30,8 @@ def compile(environments_folder, target_env):
         if any(list_actions):
           if key not in result:
             raise Exception('Attempt to execute action on unexisting collection "%s"' % key)
+          if not isinstance(result[key], list):
+            raise Exception('Attempt to execute lists action on a non-collection key "%s"' % key)
           current_value = result[key]
           for a in list_actions:
             if a[action] == append:
