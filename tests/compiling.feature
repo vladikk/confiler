@@ -287,6 +287,17 @@ Feature: Compiling configuration data
      When configuration data is compiled for the dev.vladik environment
      Then the error is returned: Invalid input in the "hosts" key - both items and list actions
 
-  @wip
-  Scenario: Objects - not supported
+  Scenario: Complex object are not supported (yet)
+    Given the following config file is set for the dev environment
+       """
+       {
+         "hosts": {
+           "host1": "10.0.0.1",
+           "host2": "10.0.0.2",
+           "host3": "10.0.0.3"
+         }
+       }
+       """
+     When configuration data is compiled for the dev environment
+     Then the error is returned: Complex objects are not supported (hosts). All values should be strings 
 

@@ -24,6 +24,8 @@ def compile(environments_folder, target_env):
     for key in env.keys():
       val = env[key]
       if not isinstance(val, list):
+        if not isinstance(val, basestring):
+          raise Exception('Complex objects are not supported (%s). All values should be strings' % key)
         result[key] = val
       else:
         list_actions = [i for i in val if action in i.keys()]
