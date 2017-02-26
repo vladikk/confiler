@@ -67,26 +67,35 @@ def load_env(environments_folder, env_name):
     env_json = json_file.read()
     return json.loads(env_json)
 
-def render(environments_path=None,
-           environment_file_path=None, 
-           target_path=None, 
+def render(environments_path,
+           environment_name, 
+           target_path, 
            template_file_path=None,
            templates_path=None):
-  env_data = json.loads(read_file(environment_file_path))
+  env_data = json.loads(compile(environments_path, environment_name))
   if template_file_path:
     render_template(env_data, template_file_path, target_path)
   elif templates_path:
-    for f in os.listdir(templates_path):
-      template_file_path = os.path.join(templates_path, f)
+    for template_file_path in get_files(templates_path, ".template"):
       render_template(env_data, template_file_path, target_path)
 
 def render_template(env_data, template_file_path, target_path):
+  logger.info("Rendering template file %s to folder %s. Data: %s" 
+    % (template_file_path, target_path, json.dumps(env_data)))
   template = Template(read_file(template_file_path), trim_blocks=True, lstrip_blocks=True)
-  target_file_path = os.path.join(target_path, ntpath.basename(template_file_path))
+  target_file_path = os.path.join(target_path, os.path.splitext(ntpath.basename(template_file_path))[0])
+  logger.info("Target file path: %s" % target_file_path)
   rendered = template.render(env_data)
+  logger.info("Rendered data: %s" % rendered)
   with open(target_file_path, "w") as result_file:
     result_file.write(rendered.strip())
 
 def read_file(path):
   with open(path, "r") as f:
     return f.read()
+
+def get_files(path, extension):
+  for f in os.listdir(path):
+    p = os.path.join(path, f)
+    if os.path.isfile(p) and os.path.splitext(p)[1] == extension:
+      yield p
