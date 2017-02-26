@@ -1,0 +1,10 @@
+1. Execution options:
+   * Specific template
+   * All templates
+   * Compiled environment data
+   * Compile environment data
+2. Setup script
+3. Execution entry point
+4. Proper logging
+5. Test cases that will test various execution options
+6. CMD arguments parsing

@@ -67,7 +67,8 @@ def load_env(environments_folder, env_name):
     env_json = json_file.read()
     return json.loads(env_json)
 
-def render(environment_file_path=None, 
+def render(environments_path=None,
+           environment_file_path=None, 
            target_path=None, 
            template_file_path=None,
            templates_path=None):
