@@ -1,7 +1,7 @@
-# CONFILER
-
+CONFILER
+========
 Configuration files compiler.
 
-## Installation
-
+Installation
+------------
 pip install git+https://github.com/vladikk/confiler
