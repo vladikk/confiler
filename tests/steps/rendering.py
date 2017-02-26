@@ -5,11 +5,14 @@ import confiler
 
 templates_folder_name = 'templates'
 
-@given(u'the template file "{template_file_name}" with the following contents')
-def step_impl(context, template_file_name):
+@given(u'the template file "{template_file_path}" with the following contents')
+def step_impl(context, template_file_path):
   context.templates_path = os.path.join(context.work_dir, templates_folder_name)
   ensure_folder_exists(context.templates_path)
-  path = os.path.join(context.templates_path, template_file_name)
+  relative_path = os.path.dirname(template_file_path)
+  template_file_name = os.path.basename(template_file_path)
+  ensure_folder_exists(os.path.join(context.templates_path, relative_path))
+  path = os.path.join(context.templates_path, relative_path, template_file_name)
   with open(path, "w") as env_file:
     env_file.write(context.text)
 
@@ -20,6 +23,7 @@ def step_impl(context, template_file_name, env_name, target_folder):
   confiler.render(environment_name=env_name,
                   environments_path=context.work_dir,
                   target_path=target_path,
+                  templates_path=context.templates_path,
                   template_file_path=os.path.join(context.templates_path, template_file_name + ".template"))
 
 @when(u'all templates are rendered for the {env_name} environment to the "{target_folder}" folder')

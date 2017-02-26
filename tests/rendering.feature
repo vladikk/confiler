@@ -58,6 +58,21 @@ Feature: Rendering configuration files
        </config>
        """
 
+  Scenario: Rendering a configuration template in a subfolder
+      Given the template file "config/hosts.config.template" with the following contents:
+       """
+       {% for host in hosts %}
+       {{host.name}} {{host.address}};
+       {% endfor %}
+       """
+     When all templates are rendered for the dev environment to the "results/dev" folder
+     Then the "results/dev/config/hosts.config" file has the following contents
+       """
+       web-server 192.168.1.100;
+       database 192.168.1.101;
+       app-server 192.168.1.102;
+       """
+
   Scenario: Rendering multiple configuration templates
      When all templates are rendered for the dev environment to the "results/dev" folder
      Then the "results/dev/app.config" file has the following contents

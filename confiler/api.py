@@ -70,23 +70,27 @@ def load_env(environments_folder, env_name):
 def render(environments_path,
            environment_name, 
            target_path, 
-           template_file_path=None,
-           templates_path=None):
+           templates_path,
+           template_file_path=None):
   env_data = json.loads(compile(environments_path, environment_name))
   ensure_folder_exists(target_path)
   if template_file_path:
-    render_template(env_data, template_file_path, target_path)
+    render_template(env_data, template_file_path, templates_path, target_path)
   elif templates_path:
     for template_file_path in get_files(templates_path, ".template"):
-      render_template(env_data, template_file_path, target_path)
+      render_template(env_data, template_file_path, templates_path, target_path)
 
-def render_template(env_data, template_file_path, target_path):
+def render_template(env_data, template_file_path, templates_root_path, target_path):
   logger.info("Rendering template file %s to folder %s. Data: %s" 
     % (template_file_path, target_path, json.dumps(env_data)))
+  relative_path = os.path.relpath(template_file_path, templates_root_path)
   template = Template(read_file(template_file_path), trim_blocks=True, lstrip_blocks=True)
-  target_file_path = os.path.join(target_path, os.path.splitext(ntpath.basename(template_file_path))[0])
+  target_file_path = os.path.join(target_path, 
+                                  os.path.dirname(relative_path),
+                                  os.path.splitext(ntpath.basename(template_file_path))[0])
   logger.info("Target file path: %s" % target_file_path)
   rendered = template.render(env_data)
+  ensure_folder_exists(os.path.dirname(target_file_path))
   with open(target_file_path, "w") as result_file:
     result_file.write(rendered.strip())
 
@@ -95,10 +99,10 @@ def read_file(path):
     return f.read()
 
 def get_files(path, extension):
-  for f in os.listdir(path):
-    p = os.path.join(path, f)
-    if os.path.isfile(p) and os.path.splitext(p)[1] == extension:
-      yield p
+  for root, dirs, files in os.walk(path):
+    for file in files:
+      if file.endswith(extension):
+        yield os.path.join(root, file)
 
 def ensure_folder_exists(path):
   if not os.path.exists(path):
