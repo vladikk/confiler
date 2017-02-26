@@ -264,9 +264,29 @@ Feature: Compiling configuration data
      When configuration data is compiled for the dev.vladik environment
      Then the error is returned: Attempt to execute lists action on a non-collection key "hosts"
 
+  Scenario: List operations and items in the same value
+    Given the following config file is set for the dev environment
+       """
+       {
+         "hosts": [
+           { "name": "web-server", "address": "192.168.1.100" },
+           { "name": "app-server", "address": "192.168.1.103" }
+         ]
+       }
+       """
+      And the following config file is set for the dev.vladik environment
+       """
+       {
+         "hosts": [
+           { "$action": "append", "$item": { "name": "database-s1", "address": "192.168.1.112" } },
+           { "$action": "append", "$item": { "name": "database-s2", "address": "192.168.1.113" } },
+           { "name": "database-m", "address": "192.168.1.111" }
+         ]
+       }
+       """
+     When configuration data is compiled for the dev.vladik environment
+     Then the error is returned: Invalid input in the "hosts" key - both items and list actions
 
   @wip
   Scenario: Objects - not supported
 
-  @wip
-  Scenario: List operations and items in the same value
