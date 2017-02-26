@@ -86,7 +86,6 @@ def render_template(env_data, template_file_path, target_path):
   target_file_path = os.path.join(target_path, os.path.splitext(ntpath.basename(template_file_path))[0])
   logger.info("Target file path: %s" % target_file_path)
   rendered = template.render(env_data)
-  logger.info("Rendered data: %s" % rendered)
   with open(target_file_path, "w") as result_file:
     result_file.write(rendered.strip())
 
