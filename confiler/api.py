@@ -68,12 +68,12 @@ def load_env(environments_folder, env_name):
     return json.loads(env_json)
 
 def render(environment_file_path=None, target_path=None, template_file_path=None):
-  template = Template(read_file(template_file_path))
+  template = Template(read_file(template_file_path), trim_blocks=True, lstrip_blocks=True)
   env_data = read_file(environment_file_path)
   target_file_path = os.path.join(target_path, ntpath.basename(template_file_path))
   rendered = template.render(json.loads(env_data))
   with open(target_file_path, "w") as result_file:
-    result_file.write(rendered)
+    result_file.write(rendered.strip())
 
 def read_file(path):
   with open(path, "r") as f:
