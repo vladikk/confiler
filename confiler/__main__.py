@@ -9,7 +9,7 @@ def main(args=None):
 
   parser = argparse.ArgumentParser(
     description='Confiler: Configuration files compiler',
-    epilog="Example: confiler /myapp/envs dev.vladik /myapp/packages/dev.vladik --templates /myapp/src")
+    epilog="Example: confiler /myapp/envs /myapp/src dev.vladik /myapp/packages/dev.vladik")
   parser.add_argument("environments", help="Folder containing environments' configurations")
   parser.add_argument("templates", help="Folder containing templates that should be rendered")
   parser.add_argument("environment", help="Name of the targetted environment")
