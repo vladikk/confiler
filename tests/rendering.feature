@@ -90,3 +90,49 @@ Feature: Rendering configuration files
        database 192.168.1.101
        app-server 192.168.1.102
        """
+ Scenario: Render keys with special characters
+    Given the following config file is set for the dev.test environment
+       """
+       {
+         "threshold.value": "15"
+       }
+       """
+      And the template file "app.cfg.template" with the following contents:
+       """
+       <config>
+         <add key="threshold.value" value="{{values['threshold.value']}}" />
+       </config>
+       """
+     When the "app.cfg" template is rendered for the dev.test environment to the "results/dev.test" folder
+     Then the "results/dev.test/app.cfg" file has the following contents
+       """
+       <config>
+         <add key="threshold.value" value="15" />
+       </config>
+       """
+
+ Scenario: Enumerate all keys/values 
+    Given the following config file is set for the dev.test environment
+       """
+       {
+         "threshold.value": "15",
+         "threshold.limit": "100"
+       }
+       """
+      And the template file "app.cfg.template" with the following contents:
+       """
+       <config>
+         {% for key, value in values.iteritems() %}
+         <add key="{{key}}" value="{{value}}" />
+         {% endfor %}
+       </config>
+       """
+     When the "app.cfg" template is rendered for the dev.test environment to the "results/dev.test" folder
+     Then the "results/dev.test/app.cfg" file has the following contents
+       """
+       <config>
+         <add key="threshold" value="10" />
+         <add key="threshold.limit" value="100" />
+         <add key="threshold.value" value="15" />
+       </config>
+       """

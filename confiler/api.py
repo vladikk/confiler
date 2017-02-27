@@ -1,3 +1,4 @@
+import copy
 import os
 import ntpath
 import json
@@ -73,6 +74,10 @@ def render(environments_path,
            templates_path,
            template_file_path=None):
   env_data = json.loads(compile(environments_path, environment_name))
+  env_data["values"] = {}
+  for key in env_data.keys():
+    if key != "values" and isinstance(env_data[key], basestring):
+      env_data["values"][key] = env_data[key]
   ensure_folder_exists(target_path)
   if template_file_path:
     render_template(env_data, template_file_path, templates_path, target_path)
