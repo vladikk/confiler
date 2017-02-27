@@ -4,5 +4,4 @@
 4. List required values
 5. Render environment template
 6. Support for templates in subfolders
-7. Validate key names - against jinja2 naming rules
 8. S3 based environments repository
