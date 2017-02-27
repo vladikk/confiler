@@ -4,4 +4,5 @@
 4. List required values
 5. Render environment template
 6. Support for templates in subfolders
-8. S3 based environments repository
+7. S3 based environments repository
+8. Optimize environments - move equal values to the upper level
