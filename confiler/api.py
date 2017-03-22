@@ -5,6 +5,7 @@ import json
 import logging
 from logging import DEBUG
 from jinja2 import Template
+from core import *
 
 namespace_delimeter = "."
 env_file_extension = "env"
@@ -18,44 +19,26 @@ update = "update"
 logger = logging.getLogger('api')
 
 def compile(environments_folder, target_env):
-  logger.info("Compiling configuration data for the '%s' environment" % target_env)
-  parts = target_env.split(namespace_delimeter)
-  result = { }
-  for i in range(0, len(parts)):
-    env_name = namespace_delimeter.join(parts[0:i+1])
-    env = load_env(environments_folder, env_name)
-    for key in env.keys():
-      val = env[key]
-      if not isinstance(val, list):
-        if not isinstance(val, basestring):
-          raise Exception('Complex objects are not supported (%s). All values should be strings' % key)
-        result[key] = val
-      else:
-        list_actions = [i for i in val if action in i.keys()]
-        if any(list_actions):
-          if key not in result:
-            raise Exception('Attempt to execute action on unexisting collection "%s"' % key)
-          if not isinstance(result[key], list):
-            raise Exception('Attempt to execute lists action on a non-collection key "%s"' % key)
-          if len(list_actions) != len(val):
-            raise Exception('Invalid input in the "%s" key - both items and list actions' % key)
-          current_value = result[key]
-          for a in list_actions:
-            if a[action] == append:
-              result[key].append(a[item])
-            if a[action] == remove:
-              for i in get_matching_list_items(current_value, a[matching]):
-                result[key].remove(i)
-            if a[action] == update:
-              for i in get_matching_list_items(current_value, a[matching]):
-                for k in a[data].keys():
-                  i[k] = a[data][k]
-        else: 
-          result[key] = val
+  environments_names = get_env_and_its_ancestors(target_env)
+  environments_data = { }
+  environments_commands = { }
+  for env_name in environments_names:
+    env_data = load_env(environments_folder, env_name)
+    environments_data[env_name] = env_data
+    environments_commands[env_name] = parse_env_data(env_name, env_data)
+  result = {}
+  for env in environments_names:
+    logger.info("Applying environment '%s' with %s commands" % (env, len(environments_commands[env])))
+    for cmd in environments_commands[env]:
+      cmd.execute(result)
   return json.dumps(result)
 
-def get_matching_list_items(source, conditions_dict):
-  return [i for i in source if all([c in i.keys() and i[c]==conditions_dict[c] for c in conditions_dict.keys()])]
+def get_env_and_its_ancestors(env):
+  parts = env.split(namespace_delimeter)
+  result = []
+  for i in range(0, len(parts)):
+    result.append(namespace_delimeter.join(parts[0:i+1]))
+  return result
 
 def load_env(environments_folder, env_name):
   logger.info("Loading data file for the '%s' environment" % env_name)
@@ -67,6 +50,30 @@ def load_env(environments_folder, env_name):
   with open(file_path, "r") as json_file:
     env_json = json_file.read()
     return json.loads(env_json)
+
+def parse_env_data(env_name, env_data):
+  commands = []
+  for key in env_data.keys():
+    val = env_data[key]
+    if not isinstance(val, list):
+      if not isinstance(val, basestring):
+        raise Exception('Complex objects are not supported (%s). All values should be strings' % key)
+      commands.append(SetValue(key, val, env_name))
+    else:
+      list_actions = [i for i in val if action in i.keys()]
+      if not any(list_actions):
+        commands.append(SetCollection(key, val, env_name))
+      else:
+        if len(list_actions) != len(val):
+          raise Exception('Invalid input in the "%s" key - both items and list actions' % key)
+        for a in list_actions:
+          if a[action] == append:
+            commands.append(AppendItemToCollection(key, a[item], env_name))
+          if a[action] == remove:
+            commands.append(RemoveItemFromCollection(key, a[matching], env_name))
+          if a[action] == update:
+            commands.append(UpdateItemInCollection(key, a[matching], a[data], env_name))
+  return commands
 
 def render(environments_path,
            environment_name, 
