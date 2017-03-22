@@ -1,8 +1,7 @@
-1. Proper logging
-2. Documentation
-3. Valiation - missing values
-4. List required values
-5. Render environment template
-6. Support for templates in subfolders
-7. S3 based environments repository
-8. Optimize environments - move equal values to the upper level
+1. Documentation
+2. Valiation - missing values
+3. List required values
+4. Render environment template
+5. Support for templates in subfolders
+6. S3 based environments repository
+7. Optimize environments - suggest to move equal values to the upper level
