@@ -8,24 +8,16 @@ from jinja2 import Template
 from core import *
 
 namespace_delimeter = "."
-env_file_extension = "env"
-action = "$action"
-matching = "$matching"
-item = "$item"
-data = "$data"
-remove = "remove"
-append = "append"
-update = "update"
 logger = logging.getLogger('confiler.api')
 
-def compile(environments_folder, target_env):
+def compile(envs_repo, target_env):
   environments_names = get_env_and_its_ancestors(target_env)
   environments_data = { }
   environments_commands = { }
   for env_name in environments_names:
-    env_data = load_env(environments_folder, env_name)
+    env_data = envs_repo.load(env_name)
     environments_data[env_name] = env_data
-    environments_commands[env_name] = parse_env_data(env_name, env_data)
+    environments_commands[env_name] = parse_env_commands(env_name, env_data)
   result = {}
   for env in environments_names:
     logger.info("Applying environment '%s' with %s commands" % (env, len(environments_commands[env])))
@@ -40,47 +32,12 @@ def get_env_and_its_ancestors(env):
     result.append(namespace_delimeter.join(parts[0:i+1]))
   return result
 
-def load_env(environments_folder, env_name):
-  logger.info("Loading data file for the '%s' environment" % env_name)
-  file_name = '%s.%s' % (env_name, env_file_extension)
-  file_path = os.path.join(environments_folder, file_name)
-  logger.info("Loading data from file %s" % file_path)
-  if not os.path.exists(file_path):
-    return { }
-  with open(file_path, "r") as json_file:
-    env_json = json_file.read()
-    return json.loads(env_json)
-
-def parse_env_data(env_name, env_data):
-  commands = []
-  for key in env_data.keys():
-    val = env_data[key]
-    if not isinstance(val, list):
-      if not isinstance(val, basestring):
-        raise Exception('Complex objects are not supported (%s). All values should be strings' % key)
-      commands.append(SetValue(key, val, env_name))
-    else:
-      list_actions = [i for i in val if action in i.keys()]
-      if not any(list_actions):
-        commands.append(SetCollection(key, val, env_name))
-      else:
-        if len(list_actions) != len(val):
-          raise Exception('Invalid input in the "%s" key - both items and list actions' % key)
-        for a in list_actions:
-          if a[action] == append:
-            commands.append(AppendItemToCollection(key, a[item], env_name))
-          if a[action] == remove:
-            commands.append(RemoveItemFromCollection(key, a[matching], env_name))
-          if a[action] == update:
-            commands.append(UpdateItemInCollection(key, a[matching], a[data], env_name))
-  return commands
-
-def render(environments_path,
+def render(envs_repo,
            environment_name, 
            target_path, 
            templates_path,
            template_file_path=None):
-  env_data = json.loads(compile(environments_path, environment_name))
+  env_data = json.loads(compile(envs_repo, environment_name))
   env_data["values"] = {}
   for key in env_data.keys():
     if key != "values" and isinstance(env_data[key], basestring):

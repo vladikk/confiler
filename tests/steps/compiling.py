@@ -12,7 +12,7 @@ def step_impl(context, env_name):
 @when(u'configuration data is compiled for the {env_name} environment')
 def step_impl(context, env_name):
   try:
-    context.result_json = confiler.compile(context.work_dir, env_name)
+    context.result_json = confiler.compile(context.envs_repo, env_name)
   except Exception as e:
     context.error = e
 

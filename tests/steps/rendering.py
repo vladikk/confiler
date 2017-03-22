@@ -21,7 +21,7 @@ def step_impl(context, template_file_name, env_name, target_folder):
   target_path = os.path.join(context.work_dir, target_folder)
   ensure_folder_exists(target_path)
   confiler.render(environment_name=env_name,
-                  environments_path=context.work_dir,
+                  envs_repo=context.envs_repo,
                   target_path=target_path,
                   templates_path=context.templates_path,
                   template_file_path=os.path.join(context.templates_path, template_file_name + ".template"))
@@ -32,7 +32,7 @@ def step_impl(context, env_name, target_folder):
   ensure_folder_exists(target_path)
   env_data = os.path.join(context.work_dir, env_name + '.env')
   confiler.render(environment_name=env_name,
-                  environments_path=context.work_dir,
+                  envs_repo=context.envs_repo,
                   target_path=target_path,
                   templates_path=context.templates_path)
 

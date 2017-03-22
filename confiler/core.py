@@ -1,6 +1,14 @@
 import json
 import logging
 
+action = "$action"
+matching = "$matching"
+item = "$item"
+data = "$data"
+remove = "remove"
+append = "append"
+update = "update"
+
 logger = logging.getLogger('confiler.core')
 
 def get_matching_list_items(source, conditions_dict):
@@ -94,3 +102,26 @@ class UpdateItemInCollection(CollectionCommand):
       logger.debug("%s: Updated item in collection '%s': %s" % 
                    (self.namespace, self.name, json.dumps(i)))
 
+def parse_env_commands(env_name, env_data):
+  commands = []
+  for key in env_data.keys():
+    val = env_data[key]
+    if not isinstance(val, list):
+      if not isinstance(val, basestring):
+        raise Exception('Complex objects are not supported (%s). All values should be strings' % key)
+      commands.append(SetValue(key, val, env_name))
+    else:
+      list_actions = [i for i in val if action in i.keys()]
+      if not any(list_actions):
+        commands.append(SetCollection(key, val, env_name))
+      else:
+        if len(list_actions) != len(val):
+          raise Exception('Invalid input in the "%s" key - both items and list actions' % key)
+        for a in list_actions:
+          if a[action] == append:
+            commands.append(AppendItemToCollection(key, a[item], env_name))
+          if a[action] == remove:
+            commands.append(RemoveItemFromCollection(key, a[matching], env_name))
+          if a[action] == update:
+            commands.append(UpdateItemInCollection(key, a[matching], a[data], env_name))
+  return commands
