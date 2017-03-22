@@ -1,3 +1,8 @@
+import json
+import logging
+
+logger = logging.getLogger('core')
+
 def get_matching_list_items(source, conditions_dict):
   return [i for i in source if all([c in i.keys() and i[c]==conditions_dict[c] for c in conditions_dict.keys()])]
 
@@ -8,6 +13,13 @@ class SetValue(object):
     self.namespace = namespace
   
   def execute(self, data):
+    if self.key in data.keys():
+      logger.debug("%s: Replacing value of '%s': '%s' => '%s'" % 
+                   (self.namespace, self.key, data[self.key], self.value))
+    else:
+      logger.debug("%s: Initializeing value of '%s' to %s" % 
+                   (self.namespace, self.key, self.value))
+
     data[self.key] = self.value
 
 
@@ -18,6 +30,13 @@ class SetCollection(object):
     self.namespace = namespace
 
   def execute(self, data):
+    if self.name in data.keys():
+      logger.debug("%s: Replacing collection '%s': '%s' => '%s'" % 
+                   (self.namespace, self.name, 
+                    json.dumps(data[self.name]), json.dumps(self.items)))
+    else:
+      logger.debug("%s: Initializing collection '%s': %s" % 
+                   (self.namespace, self.name, json.dumps(self.items)))
     data[self.name] = self.items
 
 
@@ -37,6 +56,8 @@ class AppendItemToCollection(CollectionCommand):
 
   def execute(self, data):
     super(AppendItemToCollection, self).execute(data)
+    logger.debug("%s: Appending item to collection '%s': %s" % 
+                 (self.namespace, self.name, json.dumps(self.item)))
     data[self.name].append(self.item)
 
 
@@ -50,6 +71,8 @@ class RemoveItemFromCollection(CollectionCommand):
     super(RemoveItemFromCollection, self).execute(data)
     items = get_matching_list_items(data[self.name], self.conditions)
     for i in items:
+      logger.debug("%s: Removing item from collection '%s': %s" % 
+                 (self.namespace, self.name, json.dumps(i)))
       data[self.name].remove(i)
 
 
@@ -64,6 +87,10 @@ class UpdateItemInCollection(CollectionCommand):
     super(UpdateItemInCollection, self).execute(data)
     items = get_matching_list_items(data[self.name], self.conditions)
     for i in items:
+      logger.debug("%s: Updating item in collection '%s': %s" % 
+                   (self.namespace, self.name, json.dumps(i)))
       for k in self.new_data.keys():
         i[k] = self.new_data[k]
+      logger.debug("%s: Updated item in collection '%s': %s" % 
+                   (self.namespace, self.name, json.dumps(i)))
 
