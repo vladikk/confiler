@@ -16,7 +16,7 @@ data = "$data"
 remove = "remove"
 append = "append"
 update = "update"
-logger = logging.getLogger('api')
+logger = logging.getLogger('confiler.api')
 
 def compile(environments_folder, target_env):
   environments_names = get_env_and_its_ancestors(target_env)

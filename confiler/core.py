@@ -1,7 +1,7 @@
 import json
 import logging
 
-logger = logging.getLogger('core')
+logger = logging.getLogger('confiler.core')
 
 def get_matching_list_items(source, conditions_dict):
   return [i for i in source if all([c in i.keys() and i[c]==conditions_dict[c] for c in conditions_dict.keys()])]
