@@ -8,6 +8,7 @@ from jinja2 import Template
 from core import *
 
 namespace_delimeter = "."
+template_file_extension = ".template"
 logger = logging.getLogger('confiler.api')
 
 def compile(envs_repo, target_env):
@@ -46,7 +47,7 @@ def render(envs_repo,
   if template_file_path:
     render_template(env_data, template_file_path, templates_path, target_path)
   elif templates_path:
-    for template_file_path in get_files(templates_path, ".template"):
+    for template_file_path in get_files(templates_path, template_file_extension):
       render_template(env_data, template_file_path, templates_path, target_path)
 
 def render_template(env_data, template_file_path, templates_root_path, target_path):

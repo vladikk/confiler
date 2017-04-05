@@ -141,7 +141,7 @@ Scenario: Rendering a configuration template within a subfolder
     Given the template file "config/app.config.template" with the following contents:
        """
        <config>
-         <add key="threshold" value="{{threshold}}"></add>
+         <add key="threshold" value="{{values["threshold"]}}"></add>
          {% for host in hosts %}
          <add key="{{host.name}}" value="{{host.address}}" />
          {% endfor %}

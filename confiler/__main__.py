@@ -2,6 +2,7 @@ import sys
 import argparse
 import confiler
 import logging
+from confiler.repos import FSEnvsRepository
 
 def main(args=None):
   """The main routine."""
@@ -32,8 +33,8 @@ def main(args=None):
     logger.addHandler(fh)
     logger.addHandler(ch)
 
-  confiler.render(environment_name=args.environment,
-                  environments_path=args.environments,
+  confiler.render(envs_repo=FSEnvsRepository(args.environments),
+                  environment_name=args.environment,
                   target_path=args.destination,
                   templates_path=args.templates,
                   template_file_path=args.template)
