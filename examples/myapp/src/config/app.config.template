@@ -1,0 +1,6 @@
+<config>
+	<add key="threshold" value="{{threshold}}"></add>
+	{% for host in hosts %}
+	<add key="{{host.name}}" value="{{host.address}}" />
+	{% endfor %}
+</config>

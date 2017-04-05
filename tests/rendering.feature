@@ -136,3 +136,24 @@ Feature: Rendering configuration files
          <add key="threshold.value" value="15" />
        </config>
        """
+
+Scenario: Rendering a configuration template within a subfolder
+    Given the template file "config/app.config.template" with the following contents:
+       """
+       <config>
+         <add key="threshold" value="{{threshold}}"></add>
+         {% for host in hosts %}
+         <add key="{{host.name}}" value="{{host.address}}" />
+         {% endfor %}
+       </config>
+       """
+     When the "config/app.config" template is rendered for the dev environment to the "results/dev" folder
+     Then the "results/dev/config/app.config" file has the following contents
+       """
+       <config>
+         <add key="threshold" value="10"></add>
+         <add key="web-server" value="192.168.1.100" />
+         <add key="database" value="192.168.1.101" />
+         <add key="app-server" value="192.168.1.102" />
+       </config>
+       """

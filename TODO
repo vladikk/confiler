@@ -2,5 +2,4 @@
 2. Validation - missing values
 3. Feature: List required values
 4. Feature: Render environment template
-5. Support for templates in subfolders
-6. Feature: Optimize environments - suggest to move equal values to the upper level
+5. Feature: Optimize environments - suggest to move equal values to the upper level
