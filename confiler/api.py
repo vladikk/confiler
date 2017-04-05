@@ -1,3 +1,4 @@
+import codecs
 import copy
 import os
 import ntpath
@@ -66,7 +67,10 @@ def render_template(env_data, template_file_path, templates_root_path, target_pa
 
 def read_file(path):
   with open(path, "r") as f:
-    return f.read()
+    c = f.read()
+    if c.startswith(codecs.BOM_UTF8):
+      c = c[3:]
+    return c
 
 def get_files(path, extension):
   for root, dirs, files in os.walk(path):
