@@ -19,4 +19,6 @@ class FSEnvsRepository(object):
       return { }
     with open(file_path, "r") as json_file:
       env_json = json_file.read()
+      if env_json.startswith(codecs.BOM_UTF8):
+        env_json = env_json[3:]
       return json.loads(env_json) 
