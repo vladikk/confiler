@@ -3,4 +3,3 @@
 3. Feature: List required values
 4. Feature: Render environment template
 5. Feature: Optimize environments - suggest to move equal values to the upper level
-
